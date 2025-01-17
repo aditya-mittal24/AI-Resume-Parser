@@ -731,11 +731,16 @@ class resumeparse(object):
         if len(skills) == 0:
             skills = resumeparse.extract_skills(full_text)
         skills = list(dict.fromkeys(skills).keys())
+        
+        
+        # PROJECTS
+        projects = resume_segments['accomplishments'].get('projects', "")
 
         return {
             "name": name,
             "education": education,
             "experience": experience,
             "skills": skills,
+            "projects": projects,
             "resume_lines": resume_segments,
         }
