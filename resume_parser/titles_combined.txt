@@ -1884,6 +1884,8 @@ An/Ssn-2 4 Operator
 An/Syq-13 Nav/C2 Operator
 Anaesthesiologist
 Anaesthetic Technician
+Angular Developer
+Analyst
 Analog Circuit Designer
 Analog Design Engineer
 Analog Device Designer
@@ -28301,6 +28303,7 @@ Frog Catcher
 Frog Farmer
 Frog Shaker
 Frog or Oyster Farmworker
+Frontend Developer
 Front Attendant
 Front Clerk
 Front Counter Attendant
@@ -29301,6 +29304,7 @@ Gauger Chief
 Gauger, Chief Delivery
 Gauger, Delivery
 Gauntlet Pairer
+GET
 Gear Changer
 Gear Cutter
 Gear Cutting Machine Operator
@@ -62456,6 +62460,8 @@ Software Development Advisor
 Software Development Analyst
 Software Development Coordinator
 Software Development Engineer
+Software Development Engineer Backend
+Software Development Engineer Frontend
 Software Development Engineer Intern
 Software Development Intern
 Software Development Leader

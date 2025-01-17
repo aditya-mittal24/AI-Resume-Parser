@@ -103,7 +103,6 @@ class resumeparse(object):
         'army experience',
         'military experience',
         'military background',
-        'position of responsibility'
     )
 
     education_and_training = (
@@ -131,6 +130,7 @@ class resumeparse(object):
         'certiﬁcations/courses & achievements',
         'special training',
         'coursework',
+        'position of responsibility'
     )
 
     skills_header = (
@@ -710,9 +710,13 @@ class resumeparse(object):
         
 
         # EDUCATION
+        education_text = resume_segments['education_and_training'].get('education', "")
+        education_text = " ".join(education_text)
+        if not education_text:
+            education_text = full_text
         university = resumeparse.extract_university(
-            " ".join(resume_segments['education_and_training']['education']), os.path.join(base_path, 'world-universities.csv'))
-        degree = resumeparse.get_degree(full_text)
+            education_text, os.path.join(base_path, 'world-universities.csv'))
+        degree = resumeparse.get_degree(education_text)
         education = {}
         if university:
             education['university'] = university
@@ -734,7 +738,7 @@ class resumeparse(object):
         
         
         # PROJECTS
-        projects = resume_segments['accomplishments'].get('projects', "")
+        projects = resume_segments['accomplishments'].get('project', "")
 
         return {
             "name": name,
