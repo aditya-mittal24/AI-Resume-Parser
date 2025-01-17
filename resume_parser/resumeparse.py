@@ -699,8 +699,8 @@ class resumeparse(object):
 
         full_text = " ".join(resume_lines)
 
-        email = resumeparse.extract_email(" ".join(resume_segments['contact_info']))
-        phone = resumeparse.find_phone(" ".join(resume_segments['contact_info']))
+        # email = resumeparse.extract_email(" ".join(resume_segments['contact_info']))
+        # phone = resumeparse.find_phone(" ".join(resume_segments['contact_info']))
         name = resumeparse.extract_name(
             " ".join(resume_segments['contact_info']))
         total_exp, text = resumeparse.get_experience(resume_segments)
@@ -727,8 +727,6 @@ class resumeparse(object):
         skills = list(dict.fromkeys(skills).keys())
 
         return {
-            "email": email,
-            "phone": phone,
             "name": name,
             "total_exp": total_exp,
             "university": university,
