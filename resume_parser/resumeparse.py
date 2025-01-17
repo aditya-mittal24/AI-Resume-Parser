@@ -630,8 +630,8 @@ class resumeparse(object):
     def extract_resume_sections(resume_lines):
         # Define possible section headers
         section_headers = [
-            "Experience", "Work Experience", "Professional Experience",
-            "Projects", "Key Projects", "Qualification", "Education", "Skills", "Certifications", "Achievements"
+            "Experience", "Work Experience", "Professional Experience", "Professional Summary", "About Me", "Summary", "Publications", 
+            "Projects", "Key Projects", "Qualification", "Education", "Skills", "Certifications", "Achievements", "Links", "Position of Responsibility"
         ]
         
         # Initialize variables
@@ -643,7 +643,7 @@ class resumeparse(object):
             cleaned_line = line.strip()
             
             # Check if the line matches a section header
-            if cleaned_line in section_headers:
+            if cleaned_line.lower() in [header.lower() for header in section_headers]:
                 current_section = cleaned_line
                 sections[current_section] = []  # Initialize a list for this section
             elif current_section:
@@ -757,9 +757,10 @@ class resumeparse(object):
             "name": name,
             "total_exp": total_exp,
             "university": university,
-            "designition": designition,
+            "designation": designition,
             "degree": degree,
             "skills": skills,
             "Companies worked at": experience,
-            "resume_sections": resume_sections
+            "resume_sections": resume_sections,
+            "resume_lines": resume_lines
         }
