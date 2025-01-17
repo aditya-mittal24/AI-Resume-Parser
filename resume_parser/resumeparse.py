@@ -595,6 +595,64 @@ class resumeparse(object):
             education.append(match.strip())
 
         return education
+    
+    def split_resume_sections(resume_text):
+        # Define section patterns
+        section_patterns = {
+            "Education": r"\b(Education|Academic Background|Educational Qualifications)\b",
+            "Experience": r"\b(Work Experience|Professional Experience|Employment History)\b",
+            "Projects": r"\b(Projects|Key Projects)\b",
+            "Skills": r"\b(Skills|Technical Skills|Key Skills)\b",
+            "Certifications": r"\b(Certifications|Certifications & Trainings)\b"
+        }
+        
+        # Combine all section patterns into a single regex
+        combined_pattern = "|".join(f"(?P<{key}>{pattern})" for key, pattern in section_patterns.items())
+        
+        # Find all sections using regex
+        matches = list(re.finditer(combined_pattern, resume_text, re.IGNORECASE))
+        
+        # Extract sections and their content
+        sections = {}
+        for i, match in enumerate(matches):
+            # Section name from the match
+            section_name = match.lastgroup
+            
+            # Start and end of the section
+            start = match.end()
+            end = matches[i + 1].start() if i + 1 < len(matches) else len(resume_text)
+            
+            # Extract section content
+            sections[section_name] = resume_text[start:end].strip()
+        
+        return sections
+    
+    def extract_resume_sections(resume_lines):
+        # Define possible section headers
+        section_headers = [
+            "Experience", "Work Experience", "Professional Experience",
+            "Projects", "Key Projects", "Qualification", "Education", "Skills", "Certifications", "Achievements"
+        ]
+        
+        # Initialize variables
+        sections = {}
+        current_section = None
+        
+        for line in resume_lines:
+            # Clean the line (remove extra spaces, convert to title case for comparison)
+            cleaned_line = line.strip()
+            
+            # Check if the line matches a section header
+            if cleaned_line in section_headers:
+                current_section = cleaned_line
+                sections[current_section] = []  # Initialize a list for this section
+            elif current_section:
+                # Add content to the current section
+                sections[current_section].append(cleaned_line)
+        
+        # Return sections as a dictionary
+        return sections
+
 
     def get_company_working(text, file):
         # doc = custom_nlp3(text)
@@ -679,6 +737,7 @@ class resumeparse(object):
         degree = resumeparse.get_degree(full_text)
         experience = resumeparse.get_company_working(
             full_text, os.path.join(base_path, 'companies.csv'))
+        resume_sections = resumeparse.extract_resume_sections(resume_lines)
 
         skills = ""
 
@@ -702,4 +761,5 @@ class resumeparse(object):
             "degree": degree,
             "skills": skills,
             "Companies worked at": experience,
+            "resume_sections": resume_sections
         }
