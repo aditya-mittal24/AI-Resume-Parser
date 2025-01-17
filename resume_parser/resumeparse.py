@@ -200,6 +200,7 @@ class resumeparse(object):
         'theses',
     )
 
+    # extracting text from pdf
     def convert_pdf_to_txt(pdf_file):
         """
         A utility function to convert a machine-readable PDF to raw text.
@@ -241,6 +242,7 @@ class resumeparse(object):
             logging.error('Error in docx file:: ' + str(e))
             return [], " "
 
+    # separating resume sections
     def find_segment_indices(string_to_search, resume_segments, resume_indices):
         for i, line in enumerate(string_to_search):
 
@@ -335,177 +337,174 @@ class resumeparse(object):
 
         return resume_segments
 
-    def calculate_experience(resume_text):
+    # def calculate_experience(resume_text):
 
-        #
-        # def get_month_index(month):
-        #   month_dict = {'jan':1, 'feb':2, 'mar':3, 'apr':4, 'may':5, 'jun':6, 'jul':7, 'aug':8, 'sep':9, 'oct':10, 'nov':11, 'dec':12}
-        #   return month_dict[month.lower()]
-        # print(resume_text)
-        # print("*"*100)
-        def correct_year(result):
-            if len(result) < 2:
-                if int(result) > int(str(date.today().year)[-2:]):
-                    result = str(int(str(date.today().year)[:-2]) - 1) + result
-                else:
-                    result = str(date.today().year)[:-2] + result
-            return result
+    #     #
+    #     # def get_month_index(month):
+    #     #   month_dict = {'jan':1, 'feb':2, 'mar':3, 'apr':4, 'may':5, 'jun':6, 'jul':7, 'aug':8, 'sep':9, 'oct':10, 'nov':11, 'dec':12}
+    #     #   return month_dict[month.lower()]
+    #     # print(resume_text)
+    #     # print("*"*100)
+    #     def correct_year(result):
+    #         if len(result) < 2:
+    #             if int(result) > int(str(date.today().year)[-2:]):
+    #                 result = str(int(str(date.today().year)[:-2]) - 1) + result
+    #             else:
+    #                 result = str(date.today().year)[:-2] + result
+    #         return result
 
-        # try:
-        experience = 0
-        start_month = -1
-        start_year = -1
-        end_month = -1
-        end_year = -1
+    #     # try:
+    #     experience = 0
+    #     start_month = -1
+    #     start_year = -1
+    #     end_month = -1
+    #     end_year = -1
 
-        not_alpha_numeric = r'[^a-zA-Z\d]'
-        number = r'(\d{2})'
+    #     not_alpha_numeric = r'[^a-zA-Z\d]'
+    #     number = r'(\d{2})'
 
-        months_num = r'(01)|(02)|(03)|(04)|(05)|(06)|(07)|(08)|(09)|(10)|(11)|(12)'
-        months_short = r'(jan)|(feb)|(mar)|(apr)|(may)|(jun)|(jul)|(aug)|(sep)|(oct)|(nov)|(dec)'
-        months_long = r'(january)|(february)|(march)|(april)|(may)|(june)|(july)|(august)|(september)|(october)|(november)|(december)'
-        month = r'(' + months_num + r'|' + \
-            months_short + r'|' + months_long + r')'
-        regex_year = r'((20|19)(\d{2})|(\d{2}))'
-        year = regex_year
-        start_date = month + not_alpha_numeric + r"?" + year
+    #     months_num = r'(01)|(02)|(03)|(04)|(05)|(06)|(07)|(08)|(09)|(10)|(11)|(12)'
+    #     months_short = r'(jan)|(feb)|(mar)|(apr)|(may)|(jun)|(jul)|(aug)|(sep)|(oct)|(nov)|(dec)'
+    #     months_long = r'(january)|(february)|(march)|(april)|(may)|(june)|(july)|(august)|(september)|(october)|(november)|(december)'
+    #     month = r'(' + months_num + r'|' + \
+    #         months_short + r'|' + months_long + r')'
+    #     regex_year = r'((20|19)(\d{2})|(\d{2}))'
+    #     year = regex_year
+    #     start_date = month + not_alpha_numeric + r"?" + year
 
-        # end_date = r'((' + number + r'?' + not_alpha_numeric + r"?" + number + not_alpha_numeric + r"?" + year + r')|(present|current))'
-        end_date = r'((' + number + r'?' + not_alpha_numeric + r"?" + month + \
-            not_alpha_numeric + r"?" + year + \
-            r')|(present|current|till date|today))'
-        longer_year = r"((20|19)(\d{2}))"
-        year_range = longer_year + \
-            r"(" + not_alpha_numeric + r"{1,4}|(\s*to\s*))" + \
-            r'(' + longer_year + r'|(present|current|till date|today))'
-        date_range = r"(" + start_date + r"(" + not_alpha_numeric + \
-            r"{1,4}|(\s*to\s*))" + end_date + r")|(" + year_range + r")"
+    #     # end_date = r'((' + number + r'?' + not_alpha_numeric + r"?" + number + not_alpha_numeric + r"?" + year + r')|(present|current))'
+    #     end_date = r'((' + number + r'?' + not_alpha_numeric + r"?" + month + \
+    #         not_alpha_numeric + r"?" + year + \
+    #         r')|(present|current|till date|today))'
+    #     longer_year = r"((20|19)(\d{2}))"
+    #     year_range = longer_year + \
+    #         r"(" + not_alpha_numeric + r"{1,4}|(\s*to\s*))" + \
+    #         r'(' + longer_year + r'|(present|current|till date|today))'
+    #     date_range = r"(" + start_date + r"(" + not_alpha_numeric + \
+    #         r"{1,4}|(\s*to\s*))" + end_date + r")|(" + year_range + r")"
 
-        regular_expression = re.compile(date_range, re.IGNORECASE)
+    #     regular_expression = re.compile(date_range, re.IGNORECASE)
 
-        regex_result = re.search(regular_expression, resume_text)
+    #     regex_result = re.search(regular_expression, resume_text)
 
-        while regex_result:
+    #     while regex_result:
 
-            try:
-                date_range = regex_result.group()
-                # print(date_range)
-                # print("*"*100)
-                try:
+    #         try:
+    #             date_range = regex_result.group()
+    #             # print(date_range)
+    #             # print("*"*100)
+    #             try:
 
-                    year_range_find = re.compile(year_range, re.IGNORECASE)
-                    year_range_find = re.search(year_range_find, date_range)
-                    # print("year_range_find",year_range_find.group())
+    #                 year_range_find = re.compile(year_range, re.IGNORECASE)
+    #                 year_range_find = re.search(year_range_find, date_range)
+    #                 # print("year_range_find",year_range_find.group())
 
-                    # replace = re.compile(r"(" + not_alpha_numeric + r"{1,4}|(\s*to\s*))", re.IGNORECASE)
-                    replace = re.compile(
-                        r"((\s*to\s*)|" + not_alpha_numeric + r"{1,4})", re.IGNORECASE)
-                    replace = re.search(
-                        replace, year_range_find.group().strip())
-                    # print(replace.group())
-                    # print(year_range_find.group().strip().split(replace.group()))
-                    start_year_result, end_year_result = year_range_find.group(
-                    ).strip().split(replace.group())
-                    # print(start_year_result, end_year_result)
-                    # print("*"*100)
-                    start_year_result = int(correct_year(start_year_result))
-                    if (end_year_result.lower().find('present') != -1 or
-                        end_year_result.lower().find('current') != -1 or
-                        end_year_result.lower().find('till date') != -1 or
-                            end_year_result.lower().find('today') != -1):
-                        end_month = date.today().month  # current month
-                        end_year_result = date.today().year  # current year
-                    else:
-                        end_year_result = int(correct_year(end_year_result))
+    #                 # replace = re.compile(r"(" + not_alpha_numeric + r"{1,4}|(\s*to\s*))", re.IGNORECASE)
+    #                 replace = re.compile(
+    #                     r"((\s*to\s*)|" + not_alpha_numeric + r"{1,4})", re.IGNORECASE)
+    #                 replace = re.search(
+    #                     replace, year_range_find.group().strip())
+    #                 # print(replace.group())
+    #                 # print(year_range_find.group().strip().split(replace.group()))
+    #                 start_year_result, end_year_result = year_range_find.group(
+    #                 ).strip().split(replace.group())
+    #                 # print(start_year_result, end_year_result)
+    #                 # print("*"*100)
+    #                 start_year_result = int(correct_year(start_year_result))
+    #                 if (end_year_result.lower().find('present') != -1 or
+    #                     end_year_result.lower().find('current') != -1 or
+    #                     end_year_result.lower().find('till date') != -1 or
+    #                         end_year_result.lower().find('today') != -1):
+    #                     end_month = date.today().month  # current month
+    #                     end_year_result = date.today().year  # current year
+    #                 else:
+    #                     end_year_result = int(correct_year(end_year_result))
 
-                except Exception as e:
-                    # logging.error(str(e))
-                    start_date_find = re.compile(start_date, re.IGNORECASE)
-                    start_date_find = re.search(start_date_find, date_range)
+    #             except Exception as e:
+    #                 # logging.error(str(e))
+    #                 start_date_find = re.compile(start_date, re.IGNORECASE)
+    #                 start_date_find = re.search(start_date_find, date_range)
 
-                    non_alpha = re.compile(not_alpha_numeric, re.IGNORECASE)
-                    non_alpha_find = re.search(
-                        non_alpha, start_date_find.group().strip())
+    #                 non_alpha = re.compile(not_alpha_numeric, re.IGNORECASE)
+    #                 non_alpha_find = re.search(
+    #                     non_alpha, start_date_find.group().strip())
 
-                    replace = re.compile(
-                        start_date + r"(" + not_alpha_numeric + r"{1,4}|(\s*to\s*))", re.IGNORECASE)
-                    replace = re.search(replace, date_range)
-                    date_range = date_range[replace.end():]
+    #                 replace = re.compile(
+    #                     start_date + r"(" + not_alpha_numeric + r"{1,4}|(\s*to\s*))", re.IGNORECASE)
+    #                 replace = re.search(replace, date_range)
+    #                 date_range = date_range[replace.end():]
 
-                    start_year_result = start_date_find.group(
-                    ).strip().split(non_alpha_find.group())[-1]
+    #                 start_year_result = start_date_find.group(
+    #                 ).strip().split(non_alpha_find.group())[-1]
 
-                    # if len(start_year_result)<2:
-                    #   if int(start_year_result) > int(str(date.today().year)[-2:]):
-                    #     start_year_result = str(int(str(date.today().year)[:-2]) - 1 )+start_year_result
-                    #   else:
-                    #     start_year_result = str(date.today().year)[:-2]+start_year_result
-                    # start_year_result = int(start_year_result)
-                    start_year_result = int(correct_year(start_year_result))
+    #                 # if len(start_year_result)<2:
+    #                 #   if int(start_year_result) > int(str(date.today().year)[-2:]):
+    #                 #     start_year_result = str(int(str(date.today().year)[:-2]) - 1 )+start_year_result
+    #                 #   else:
+    #                 #     start_year_result = str(date.today().year)[:-2]+start_year_result
+    #                 # start_year_result = int(start_year_result)
+    #                 start_year_result = int(correct_year(start_year_result))
 
-                    if date_range.lower().find('present') != -1 or date_range.lower().find('current') != -1:
-                        end_month = date.today().month  # current month
-                        end_year_result = date.today().year  # current year
-                    else:
-                        end_date_find = re.compile(end_date, re.IGNORECASE)
-                        end_date_find = re.search(end_date_find, date_range)
+    #                 if date_range.lower().find('present') != -1 or date_range.lower().find('current') != -1:
+    #                     end_month = date.today().month  # current month
+    #                     end_year_result = date.today().year  # current year
+    #                 else:
+    #                     end_date_find = re.compile(end_date, re.IGNORECASE)
+    #                     end_date_find = re.search(end_date_find, date_range)
 
-                        end_year_result = end_date_find.group().strip().split(
-                            non_alpha_find.group())[-1]
+    #                     end_year_result = end_date_find.group().strip().split(
+    #                         non_alpha_find.group())[-1]
 
-                        # if len(end_year_result)<2:
-                        #   if int(end_year_result) > int(str(date.today().year)[-2:]):
-                        #     end_year_result = str(int(str(date.today().year)[:-2]) - 1 )+end_year_result
-                        #   else:
-                        #     end_year_result = str(date.today().year)[:-2]+end_year_result
-                        # end_year_result = int(end_year_result)
-                        try:
-                            end_year_result = int(
-                                correct_year(end_year_result))
-                        except Exception as e:
-                            logging.error(str(e))
-                            end_year_result = int(
-                                re.search("\d+", correct_year(end_year_result)).group())
+    #                     # if len(end_year_result)<2:
+    #                     #   if int(end_year_result) > int(str(date.today().year)[-2:]):
+    #                     #     end_year_result = str(int(str(date.today().year)[:-2]) - 1 )+end_year_result
+    #                     #   else:
+    #                     #     end_year_result = str(date.today().year)[:-2]+end_year_result
+    #                     # end_year_result = int(end_year_result)
+    #                     try:
+    #                         end_year_result = int(
+    #                             correct_year(end_year_result))
+    #                     except Exception as e:
+    #                         logging.error(str(e))
+    #                         end_year_result = int(
+    #                             re.search("\d+", correct_year(end_year_result)).group())
 
-                if (start_year == -1) or (start_year_result <= start_year):
-                    start_year = start_year_result
-                if (end_year == -1) or (end_year_result >= end_year):
-                    end_year = end_year_result
+    #             if (start_year == -1) or (start_year_result <= start_year):
+    #                 start_year = start_year_result
+    #             if (end_year == -1) or (end_year_result >= end_year):
+    #                 end_year = end_year_result
 
-                resume_text = resume_text[regex_result.end():].strip()
-                regex_result = re.search(regular_expression, resume_text)
-            except Exception as e:
-                logging.error(str(e))
-                resume_text = resume_text[regex_result.end():].strip()
-                regex_result = re.search(regular_expression, resume_text)
+    #             resume_text = resume_text[regex_result.end():].strip()
+    #             regex_result = re.search(regular_expression, resume_text)
+    #         except Exception as e:
+    #             logging.error(str(e))
+    #             resume_text = resume_text[regex_result.end():].strip()
+    #             regex_result = re.search(regular_expression, resume_text)
 
-        return end_year - start_year  # Use the obtained month attribute
+    #     return end_year - start_year  # Use the obtained month attribute
 
-    # except Exception as exception_instance:
-    #   logging.error('Issue calculating experience: '+str(exception_instance))
-    #   return None
+    # def get_experience(resume_segments):
+    #     total_exp = 0
+    #     if len(resume_segments['work_and_employment'].keys()):
+    #         text = ""
+    #         for key, values in resume_segments['work_and_employment'].items():
+    #             text += " ".join(values) + " "
+    #         total_exp = resumeparse.calculate_experience(text)
+    #         return total_exp, text
+    #     else:
+    #         text = ""
+    #         for key in resume_segments.keys():
+    #             if key != 'education_and_training':
+    #                 if key == 'contact_info':
+    #                     text += " ".join(resume_segments[key]) + " "
+    #                 else:
+    #                     for key_inner, value in resume_segments[key].items():
+    #                         text += " ".join(value) + " "
+    #         total_exp = resumeparse.calculate_experience(text)
+    #         return total_exp, text
+    #     return total_exp, " "
 
-    def get_experience(resume_segments):
-        total_exp = 0
-        if len(resume_segments['work_and_employment'].keys()):
-            text = ""
-            for key, values in resume_segments['work_and_employment'].items():
-                text += " ".join(values) + " "
-            total_exp = resumeparse.calculate_experience(text)
-            return total_exp, text
-        else:
-            text = ""
-            for key in resume_segments.keys():
-                if key != 'education_and_training':
-                    if key == 'contact_info':
-                        text += " ".join(resume_segments[key]) + " "
-                    else:
-                        for key_inner, value in resume_segments[key].items():
-                            text += " ".join(value) + " "
-            total_exp = resumeparse.calculate_experience(text)
-            return total_exp, text
-        return total_exp, " "
-
+    # extracting basic details
     def find_phone(text):
         try:
             return list(iter(phonenumbers.PhoneNumberMatcher(text, None)))[0].raw_string
@@ -541,6 +540,7 @@ class resumeparse(object):
             return span.text
         return ""
 
+    # education details
     def extract_university(text, file):
         # df = pd.read_csv(file, header=None)
         # universities = [i.lower() for i in df[1]]
@@ -572,17 +572,6 @@ class resumeparse(object):
 
         return college_names
 
-    def job_designition(text):
-        job_titles = []
-
-        __nlp = nlp(text.lower())
-
-        matches = designitionmatcher(__nlp)
-        for match_id, start, end in matches:
-            span = __nlp[start:end]
-            job_titles.append(span.text)
-        return job_titles
-
     def get_degree(text):
         # doc = custom_nlp2(text)
         # degree = []
@@ -599,6 +588,17 @@ class resumeparse(object):
             education.append(match.strip())
 
         return education
+
+    def job_designition(text):
+        job_titles = []
+
+        __nlp = nlp(text.lower())
+
+        matches = designitionmatcher(__nlp)
+        for match_id, start, end in matches:
+            span = __nlp[start:end]
+            job_titles.append(span.text)
+        return job_titles
 
     def extract_resume_sections(resume_lines):
         # Define possible section headers
@@ -630,22 +630,10 @@ class resumeparse(object):
         # Return sections as a dictionary
         return sections
 
-    def get_company_working(text, file):
-        # doc = custom_nlp3(text)
-        # company_working = []
-
-        # company_working = [ent.text.replace("\n", " ") for ent in list(doc.ents)]
-        # return list(dict.fromkeys(company_working).keys())
+    def get_experience_details(experience_text, file):
         df = pd.read_csv(file, header=None)
         companies = set(i.strip().lower()
                         for i in df[0])  # Use a set for O(1) lookup
-
-        experience_section = re.search(r"(experience|work experience|work history|professional experience)[\s\S]+?(education|skills|projects|summary|links|coursework|achievements|position of responsibility|about me|publications|technologies|awards|summary|certifications|certificates|courses|$)",
-                                       text, re.IGNORECASE)
-        if not experience_section:
-            return []  # Return empty list if no experience section is found
-
-        experience_text = experience_section.group(0)
 
         words = re.sub(' +', ' ', experience_text.lower())
         company_names = []
@@ -705,20 +693,31 @@ class resumeparse(object):
         name = resumeparse.extract_name(
             " ".join(resume_segments['contact_info']))
         
-        
+
         # EXPERIENCE
-        total_exp, text = resumeparse.get_experience(resume_segments)
-        designition = resumeparse.job_designition(full_text)
-        designition = list(dict.fromkeys(designition).keys())
-        experience = resumeparse.get_company_working(
-            full_text, os.path.join(base_path, 'companies.csv'))
+        # total_exp, text = resumeparse.get_experience(resume_segments)
+        experience_text = ""
+        if len(resume_segments['work_and_employment'].keys()):
+            for key, values in resume_segments['work_and_employment'].items():
+                experience_text += " ".join(values)
+                
+        designation = resumeparse.job_designition(experience_text)
+        designation = list(dict.fromkeys(designation).keys())
+        experience = resumeparse.get_experience_details(experience_text, os.path.join(base_path, 'companies.csv'))
+        if designation:
+            experience['designation'] = designation
         
         
+
         # EDUCATION
         university = resumeparse.extract_university(
             " ".join(resume_segments['education_and_training']['education']), os.path.join(base_path, 'world-universities.csv'))
         degree = resumeparse.get_degree(full_text)
-        
+        education = {}
+        if university:
+            education['university'] = university
+        if degree:
+            education['degree'] = degree
 
         # SKILLS
         skills = ""
@@ -735,12 +734,8 @@ class resumeparse(object):
 
         return {
             "name": name,
-            "total_exp": total_exp,
-            "university": university,
-            "designation": designition,
-            "degree": degree,
+            "education": education,
+            "experience": experience,
             "skills": skills,
-            "Companies worked at": experience,
             "resume_lines": resume_segments,
-            "experience_text": text
         }
