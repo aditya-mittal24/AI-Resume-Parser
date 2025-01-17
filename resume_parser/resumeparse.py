@@ -699,21 +699,28 @@ class resumeparse(object):
 
         full_text = " ".join(resume_lines)
 
+        # BASIC DETAILS
         # email = resumeparse.extract_email(" ".join(resume_segments['contact_info']))
         # phone = resumeparse.find_phone(" ".join(resume_segments['contact_info']))
         name = resumeparse.extract_name(
             " ".join(resume_segments['contact_info']))
+        
+        
+        # EXPERIENCE
         total_exp, text = resumeparse.get_experience(resume_segments)
-        university = resumeparse.extract_university(
-            " ".join(resume_segments['education_and_training']['education']), os.path.join(base_path, 'world-universities.csv'))
-
         designition = resumeparse.job_designition(full_text)
         designition = list(dict.fromkeys(designition).keys())
-
-        degree = resumeparse.get_degree(full_text)
         experience = resumeparse.get_company_working(
             full_text, os.path.join(base_path, 'companies.csv'))
+        
+        
+        # EDUCATION
+        university = resumeparse.extract_university(
+            " ".join(resume_segments['education_and_training']['education']), os.path.join(base_path, 'world-universities.csv'))
+        degree = resumeparse.get_degree(full_text)
+        
 
+        # SKILLS
         skills = ""
 
         if len(resume_segments['skills'].keys()):
