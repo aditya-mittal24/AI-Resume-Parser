@@ -646,20 +646,24 @@ class resumeparse(object):
         # # Regular expression for duration
         duration_pattern = r"\b((?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{4})\s*([-–—]|to)\s+((?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{4}|present|current)\b"
 
-        duration_match = re.search(
+        duration_match = re.findall(
             duration_pattern, words, re.IGNORECASE)
 
-        duration = duration_match.group(0) if duration_match else ""
+        durations = []
+        
+        for match in duration_match:
+            durations.append(' '.join(match))
+        
 
         description = words
         for matched_company in company_names:
             if matched_company:
                 description = description.replace(matched_company, '', 1)
 
-        if duration:
+        for duration in durations:
             description = description.replace(duration, '', 1)
 
-        return {"company_names": company_names, "duration": duration, "experience_description": description}
+        return {"company_names": company_names, "durations": durations, "experience_description": description}
 
     def extract_skills(text):
 
