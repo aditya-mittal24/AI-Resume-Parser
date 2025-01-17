@@ -103,6 +103,7 @@ class resumeparse(object):
         'army experience',
         'military experience',
         'military background',
+        'position of responsibility'
     )
 
     education_and_training = (
@@ -127,7 +128,9 @@ class resumeparse(object):
         'apprenticeships',
         'college activities',
         'certifications',
+        'certiﬁcations/courses & achievements',
         'special training',
+        'coursework',
     )
 
     skills_header = (
@@ -172,7 +175,8 @@ class resumeparse(object):
         'volunteer work',
         'volunteer experience',
         'additional information',
-        'interests'
+        'interests',
+        'links'
     )
 
     accomplishments = (
@@ -595,64 +599,36 @@ class resumeparse(object):
             education.append(match.strip())
 
         return education
-    
-    def split_resume_sections(resume_text):
-        # Define section patterns
-        section_patterns = {
-            "Education": r"\b(Education|Academic Background|Educational Qualifications)\b",
-            "Experience": r"\b(Work Experience|Professional Experience|Employment History)\b",
-            "Projects": r"\b(Projects|Key Projects)\b",
-            "Skills": r"\b(Skills|Technical Skills|Key Skills)\b",
-            "Certifications": r"\b(Certifications|Certifications & Trainings)\b"
-        }
-        
-        # Combine all section patterns into a single regex
-        combined_pattern = "|".join(f"(?P<{key}>{pattern})" for key, pattern in section_patterns.items())
-        
-        # Find all sections using regex
-        matches = list(re.finditer(combined_pattern, resume_text, re.IGNORECASE))
-        
-        # Extract sections and their content
-        sections = {}
-        for i, match in enumerate(matches):
-            # Section name from the match
-            section_name = match.lastgroup
-            
-            # Start and end of the section
-            start = match.end()
-            end = matches[i + 1].start() if i + 1 < len(matches) else len(resume_text)
-            
-            # Extract section content
-            sections[section_name] = resume_text[start:end].strip()
-        
-        return sections
-    
+
     def extract_resume_sections(resume_lines):
         # Define possible section headers
         section_headers = [
-            "Experience", "Work Experience", "Professional Experience", "Professional Summary", "About Me", "Summary", "Publications", 
+            "Experience", "Work Experience", "Professional Experience", "Professional Summary", "About Me", "Summary", "Publications",
             "Projects", "Key Projects", "Qualification", "Education", "Skills", "Certifications", "Achievements", "Links", "Position of Responsibility"
         ]
-        
+        # Experience|Work Experience|Professional Experience|Professional Summary|About Me|Summary|Publications|Projects|Key Projects|Qualification|Education|Skills|Certifications|Achievements|Links|Position of Responsibility
+
         # Initialize variables
         sections = {}
         current_section = None
-        
+
         for line in resume_lines:
             # Clean the line (remove extra spaces, convert to title case for comparison)
             cleaned_line = line.strip()
-            
+
             # Check if the line matches a section header
-            if cleaned_line.lower() in [header.lower() for header in section_headers]:
-                current_section = cleaned_line
-                sections[current_section] = []  # Initialize a list for this section
+            if re.match(r"(?i)^(Experience|Work Experience|Professional Experience|Professional Summary|About Me|Summary|Publications|Projects|Key Projects|Qualification|Education|Skills|Technical Skills|Certifications|Achievements|Links|Position of Responsibility).*$", cleaned_line):
+                for section in section_headers:
+                    if section in cleaned_line:
+                        current_section = section
+                # Initialize a list for this section
+                sections[current_section] = []
             elif current_section:
                 # Add content to the current section
                 sections[current_section].append(cleaned_line)
-        
+
         # Return sections as a dictionary
         return sections
-
 
     def get_company_working(text, file):
         # doc = custom_nlp3(text)
@@ -661,7 +637,8 @@ class resumeparse(object):
         # company_working = [ent.text.replace("\n", " ") for ent in list(doc.ents)]
         # return list(dict.fromkeys(company_working).keys())
         df = pd.read_csv(file, header=None)
-        companies = set(i.strip().lower() for i in df[0])  # Use a set for O(1) lookup
+        companies = set(i.strip().lower()
+                        for i in df[0])  # Use a set for O(1) lookup
 
         experience_section = re.search(r"(experience|work experience|work history|professional experience)[\s\S]+?(education|skills|projects|summary|links|coursework|achievements|position of responsibility|about me|publications|technologies|awards|summary|certifications|certificates|courses|$)",
                                        text, re.IGNORECASE)
@@ -669,7 +646,7 @@ class resumeparse(object):
             return []  # Return empty list if no experience section is found
 
         experience_text = experience_section.group(0)
-        
+
         words = re.sub(' +', ' ', experience_text.lower())
         company_names = []
 
@@ -677,11 +654,10 @@ class resumeparse(object):
         for comp in companies:
             if ' ' + comp in words:  # Direct substring match
                 company_names.append(comp)
-        
 
         # # Regular expression for duration
         duration_pattern = r"\b((?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{4})\s*([-–—]|to)\s+((?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+\d{4}|present|current)\b"
-        
+
         duration_match = re.search(
             duration_pattern, words, re.IGNORECASE)
 
@@ -723,13 +699,13 @@ class resumeparse(object):
 
         full_text = " ".join(resume_lines)
 
-        email = resumeparse.extract_email(full_text)
-        phone = resumeparse.find_phone(full_text)
+        email = resumeparse.extract_email(" ".join(resume_segments['contact_info']))
+        phone = resumeparse.find_phone(" ".join(resume_segments['contact_info']))
         name = resumeparse.extract_name(
             " ".join(resume_segments['contact_info']))
         total_exp, text = resumeparse.get_experience(resume_segments)
         university = resumeparse.extract_university(
-            full_text, os.path.join(base_path, 'world-universities.csv'))
+            " ".join(resume_segments['education_and_training']['education']), os.path.join(base_path, 'world-universities.csv'))
 
         designition = resumeparse.job_designition(full_text)
         designition = list(dict.fromkeys(designition).keys())
@@ -737,7 +713,6 @@ class resumeparse(object):
         degree = resumeparse.get_degree(full_text)
         experience = resumeparse.get_company_working(
             full_text, os.path.join(base_path, 'companies.csv'))
-        resume_sections = resumeparse.extract_resume_sections(resume_lines)
 
         skills = ""
 
@@ -761,6 +736,6 @@ class resumeparse(object):
             "degree": degree,
             "skills": skills,
             "Companies worked at": experience,
-            "resume_sections": resume_sections,
-            "resume_lines": resume_lines
+            "resume_lines": resume_segments,
+            "experience_text": text
         }
